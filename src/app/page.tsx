@@ -71,7 +71,7 @@ export default function Home() {
     <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '20px', fontFamily: 'Times New Roman, serif' }}>
       {/* Header */}
       <h1 style={{ fontSize: '24px', marginBottom: '4px', fontWeight: 'normal' }}>
-        San Francisco Movie Calendar
+        SF Indie Movie Calendar
       </h1>
       <p style={{ marginBottom: '20px', fontSize: '14px' }}>
         Independent theaters: Roxie, Balboa, Vogue, 4-Star
