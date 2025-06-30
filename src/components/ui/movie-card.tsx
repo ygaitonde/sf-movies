@@ -1,6 +1,6 @@
 'use client';
 
-import { MovieSchedule, Showtime } from '@/types/movie';
+import { MovieSchedule } from '@/types/movie';
 import { format } from 'date-fns';
 
 interface MovieCardProps {
@@ -17,11 +17,6 @@ export default function MovieCard({ schedule, selectedDate }: MovieCardProps) {
 
   if (dayShowtimes.length === 0) return null;
 
-  const handleShowtimeClick = (showtime: Showtime) => {
-    if (showtime.ticketUrl) {
-      window.open(showtime.ticketUrl, '_blank');
-    }
-  };
 
   return (
     <div style={{ borderBottom: '1px solid #000', paddingBottom: '15px', marginBottom: '15px' }}>
