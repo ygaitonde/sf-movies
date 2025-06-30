@@ -54,18 +54,23 @@ export default function FilterPanel({ filters, onFiltersChange }: FilterPanelPro
 
       {isOpen && (
         <div style={{ marginLeft: '10px' }}>
-          {Object.values(TheaterChain).map(chain => (
-            <div key={chain} style={{ marginBottom: '4px' }}>
-              <label>
-                <input
-                  type="checkbox"
-                  checked={filters.theaters?.includes(chain) || false}
-                  onChange={(e) => handleTheaterChange(chain, e.target.checked)}
-                />
-                {chain}
-              </label>
-            </div>
-          ))}
+          {Object.values(TheaterChain).map(chain => {
+            const displayName = chain === TheaterChain.FOURSTAR ? '4-Star' : 
+                               chain.charAt(0) + chain.slice(1).toLowerCase();
+            
+            return (
+              <div key={chain} style={{ marginBottom: '4px' }}>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={filters.theaters?.includes(chain) || false}
+                    onChange={(e) => handleTheaterChange(chain, e.target.checked)}
+                  />
+                  {displayName}
+                </label>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

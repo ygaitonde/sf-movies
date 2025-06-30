@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, startOfWeek, endOfWeek } from 'date-fns';
 import { MovieSchedule } from '@/types/movie';
 
@@ -13,6 +13,12 @@ interface CalendarProps {
 
 export default function Calendar({ schedules, selectedDate, onDateSelect, onMonthChange }: CalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(selectedDate);
+
+  // Auto-select today when component mounts
+  useEffect(() => {
+    const today = new Date();
+    onDateSelect(today);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
