@@ -54,3 +54,23 @@ input[type="checkbox"] {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+  
+  h1 {
+    font-size: 20px !important;
+  }
+  
+  h2 {
+    font-size: 16px !important;
+  }
+  
+  button {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+}

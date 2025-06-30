@@ -79,7 +79,7 @@ export default function Home() {
   const filteredSchedules = selectedDateSchedules;
 
   return (
-    <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '20px', fontFamily: 'Times New Roman, serif' }}>
+    <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '10px', fontFamily: 'Times New Roman, serif' }}>
       {/* Header */}
       <h1 style={{ fontSize: '24px', marginBottom: '4px', fontWeight: 'normal' }}>
         SF Indie Movie Calendar

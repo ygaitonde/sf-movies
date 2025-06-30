@@ -52,15 +52,19 @@ export default function Calendar({ schedules, selectedDate, onDateSelect, onMont
     const isSelected = isSameDay(date, selectedDate);
     
     return {
-      height: '60px',
-      padding: '4px',
+      minHeight: '50px',
+      height: 'auto',
+      padding: '2px',
       border: '1px solid #000',
       cursor: 'pointer',
       backgroundColor: isSelected ? '#000' : (isCurrentMonth ? '#fff' : '#f5f5f5'),
       color: isSelected ? '#fff' : (isCurrentMonth ? '#000' : '#999'),
-      fontSize: '12px',
+      fontSize: '10px',
       textDecoration: 'none',
-      fontWeight: daySchedules.length > 0 && isCurrentMonth ? 'bold' : 'normal'
+      fontWeight: daySchedules.length > 0 && isCurrentMonth ? 'bold' : 'normal',
+      display: 'flex',
+      flexDirection: 'column' as const,
+      justifyContent: 'flex-start'
     };
   };
 
@@ -84,7 +88,7 @@ export default function Calendar({ schedules, selectedDate, onDateSelect, onMont
       {/* Weekday Headers */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-          <div key={day} style={{ padding: '8px', textAlign: 'center', borderBottom: '1px solid #000', fontSize: '12px', fontWeight: 'bold' }}>
+          <div key={day} style={{ padding: '4px 2px', textAlign: 'center', borderBottom: '1px solid #000', fontSize: '10px', fontWeight: 'bold' }}>
             {day}
           </div>
         ))}
@@ -102,12 +106,12 @@ export default function Calendar({ schedules, selectedDate, onDateSelect, onMont
               style={getDayStyle(day)}
               onClick={() => onDateSelect(day)}
             >
-              <div style={{ fontSize: '12px', marginBottom: '2px' }}>
+              <div style={{ fontSize: '10px', marginBottom: '1px', flexShrink: 0 }}>
                 {format(day, 'd')}
               </div>
               
               {daySchedules.length > 0 && isCurrentMonth && (
-                <div style={{ fontSize: '9px', lineHeight: '1.2' }}>
+                <div style={{ fontSize: '8px', lineHeight: '1.1', flex: 1, overflow: 'hidden' }}>
                   {daySchedules.slice(0, 2).map((schedule, index) => (
                     <div key={index} style={{ 
                       overflow: 'hidden', 
@@ -115,8 +119,8 @@ export default function Calendar({ schedules, selectedDate, onDateSelect, onMont
                       whiteSpace: 'nowrap',
                       maxWidth: '100%'
                     }}>
-                      {schedule.movie.title.length > 12 ? 
-                        schedule.movie.title.substring(0, 12) + '...' : 
+                      {schedule.movie.title.length > 8 ? 
+                        schedule.movie.title.substring(0, 8) + '...' : 
                         schedule.movie.title
                       }
                     </div>
