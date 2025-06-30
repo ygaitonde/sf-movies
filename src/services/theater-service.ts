@@ -2,6 +2,9 @@ import { MovieSchedule, Theater, TheaterChain, FilterOptions, APIResponse } from
 import { cacheService, CACHE_KEYS } from '@/lib/cache';
 import { createAPIClient } from '@/lib/api-client';
 import { RoxieParser } from './roxie-parser';
+import { BalboaParser } from './balboa-parser';
+import { VogueParser } from './vogue-parser';
+import { FourStarParser } from './fourstar-parser';
 
 export class TheaterService {
   private apiClient = createAPIClient();
@@ -10,7 +13,6 @@ export class TheaterService {
     date: Date,
     filters?: FilterOptions
   ): Promise<APIResponse<MovieSchedule[]>> {
-    const dateKey = date.toISOString().split('T')[0];
     const cacheKey = CACHE_KEYS.SHOWTIMES('all', filters?.theaters?.join(','));
     
     // Check cache first
@@ -24,11 +26,19 @@ export class TheaterService {
     }
 
     try {
-      // Fetch data from Roxie theater
-      const roxieData = await RoxieParser.fetchAndParseRoxieData();
+      // Fetch data from all theaters in parallel
+      const [roxieData, balboaData, vogueData, fourstarData] = await Promise.all([
+        RoxieParser.fetchAndParseRoxieData(),
+        BalboaParser.fetchAndParseBalboaData(),
+        VogueParser.fetchAndParseVogueData(),
+        FourStarParser.fetchAndParseFourStarData()
+      ]);
+      
+      // Combine all theater data
+      const allData = [...roxieData, ...balboaData, ...vogueData, ...fourstarData];
       
       // Apply filters (but not date filtering since we want all dates for the calendar)
-      const filteredData = roxieData.filter(schedule => {
+      const filteredData = allData.filter(schedule => {
         // Apply theater filters
         if (filters?.theaters?.length && !filters.theaters.includes(schedule.theater.chain)) {
           return false;
@@ -69,8 +79,13 @@ export class TheaterService {
     }
 
     try {
-      // For now, just return the Roxie theater
-      const theaters = [RoxieParser['ROXIE_THEATER']]; // Access static property
+      // Get all theaters
+      const theaters = [
+        RoxieParser['ROXIE_THEATER'], // Access static property
+        BalboaParser['BALBOA_THEATER'], // Access static property
+        VogueParser['VOGUE_THEATER'], // Access static property
+        FourStarParser['FOURSTAR_THEATER'] // Access static property
+      ];
       
       const filteredTheaters = chain ? 
         theaters.filter(t => t.chain === chain) : 

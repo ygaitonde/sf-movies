@@ -14,7 +14,7 @@ export class RoxieParser {
     id: 'roxie-sf',
     name: 'Roxie Theater',
     address: '3117 16th St, San Francisco, CA 94103',
-    chain: TheaterChain.LOCAL,
+    chain: TheaterChain.ROXIE,
     location: {
       latitude: 37.7649,
       longitude: -122.4200

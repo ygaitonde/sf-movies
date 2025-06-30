@@ -38,11 +38,10 @@ export interface MovieSchedule {
 }
 
 export enum TheaterChain {
-  AMC = 'AMC',
-  REGAL = 'REGAL',
-  CINEMARK = 'CINEMARK',
-  FANDANGO = 'FANDANGO',
-  LOCAL = 'LOCAL'
+  ROXIE = 'ROXIE',
+  BALBOA = 'BALBOA',
+  VOGUE = 'VOGUE',
+  FOURSTAR = '4-STAR'
 }
 
 export interface APIResponse<T> {

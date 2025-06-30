@@ -48,21 +48,16 @@ export default function Home() {
   };
 
   useEffect(() => {
-    // Only fetch when filters change, not when selectedDate changes
+    // Fetch schedules when component mounts or filters change
     fetchSchedules(selectedDate, filters);
-  }, [filters]);
-
-  useEffect(() => {
-    // Fetch schedules when component mounts
-    fetchSchedules(selectedDate, filters);
-  }, []);
+  }, [filters]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
   };
 
-  const handleMonthChange = (date: Date) => {
-    // No need to fetch new data when month changes since Roxie gives us all months
+  const handleMonthChange = () => {
+    // No need to fetch new data when month changes since we fetch all months
     // Just update the calendar view
   };
 
@@ -70,97 +65,65 @@ export default function Home() {
     setFilters(newFilters);
   };
 
-  const filteredSchedules = schedules.filter(schedule => {
-    // Filter by time range if specified
-    if (filters.timeRange) {
-      const hasMatchingShowtime = schedule.showtimes.some(showtime => {
-        const showtimeDate = new Date(showtime.startTime);
-        const showtimeHour = format(showtimeDate, 'HH:mm');
-        return showtimeHour >= filters.timeRange!.start && showtimeHour <= filters.timeRange!.end;
-      });
-      if (!hasMatchingShowtime) return false;
-    }
-
-    // Filter by genre if specified
-    if (filters.genres?.length) {
-      const hasMatchingGenre = schedule.movie.genre.some(genre => 
-        filters.genres!.includes(genre)
-      );
-      if (!hasMatchingGenre) return false;
-    }
-
-    return true;
-  });
+  const filteredSchedules = schedules;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Movie Calendar</h1>
-          <p className="text-gray-600">Find movie showtimes across multiple theater chains</p>
-        </div>
+    <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '20px', fontFamily: 'Times New Roman, serif' }}>
+      {/* Header */}
+      <h1 style={{ fontSize: '24px', marginBottom: '4px', fontWeight: 'normal' }}>
+        San Francisco Movie Calendar
+      </h1>
+      <p style={{ marginBottom: '20px', fontSize: '14px' }}>
+        Independent theaters: Roxie, Balboa, Vogue, 4-Star
+      </p>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Sidebar */}
-          <div className="lg:col-span-1">
-            <FilterPanel filters={filters} onFiltersChange={handleFiltersChange} />
-          </div>
+      {/* Theater Filter */}
+      <div style={{ marginBottom: '20px', borderBottom: '1px solid #000', paddingBottom: '10px' }}>
+        <FilterPanel filters={filters} onFiltersChange={handleFiltersChange} />
+      </div>
 
-          {/* Main Content */}
-          <div className="lg:col-span-3 space-y-6">
-            {/* Calendar */}
-            <Calendar
-              schedules={schedules}
-              selectedDate={selectedDate}
-              onDateSelect={handleDateSelect}
-              onMonthChange={handleMonthChange}
-            />
+      {/* Calendar */}
+      <div style={{ marginBottom: '20px' }}>
+        <Calendar
+          schedules={schedules}
+          selectedDate={selectedDate}
+          onDateSelect={handleDateSelect}
+          onMonthChange={handleMonthChange}
+        />
+      </div>
 
-            {/* Selected Date Info */}
-            <div className="bg-white rounded-lg shadow-md p-4">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
-                {format(selectedDate, 'EEEE, MMMM d, yyyy')}
-              </h2>
-              
-              {loading && (
-                <div className="flex items-center justify-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                  <span className="ml-2 text-gray-600">Loading schedules...</span>
-                </div>
-              )}
-              
-              {error && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
-                  {error}
-                </div>
-              )}
-              
-              {!loading && !error && filteredSchedules.length === 0 && (
-                <div className="text-center py-8 text-gray-500">
-                  No movie schedules found for the selected date and filters.
-                </div>
-              )}
-              
-              {!loading && !error && filteredSchedules.length > 0 && (
-                <div className="text-sm text-gray-600 mb-4">
-                  Found {filteredSchedules.length} movie{filteredSchedules.length !== 1 ? 's' : ''} playing
-                </div>
-              )}
-            </div>
+      {/* Selected Date */}
+      <div style={{ borderTop: '1px solid #000', paddingTop: '20px' }}>
+        <h2 style={{ fontSize: '18px', marginBottom: '10px', fontWeight: 'normal' }}>
+          {format(selectedDate, 'EEEE, MMMM d, yyyy')}
+        </h2>
+        
+        {loading && <p>Loading...</p>}
+        
+        {error && (
+          <p style={{ border: '1px solid #000', padding: '10px', marginBottom: '10px' }}>
+            Error: {error}
+          </p>
+        )}
+        
+        {!loading && !error && filteredSchedules.length === 0 && (
+          <p>No movies scheduled for this date.</p>
+        )}
+        
+        {!loading && !error && filteredSchedules.length > 0 && (
+          <p style={{ fontSize: '14px', marginBottom: '15px' }}>
+            {filteredSchedules.length} movie{filteredSchedules.length !== 1 ? 's' : ''} playing
+          </p>
+        )}
 
-            {/* Movie Cards */}
-            <div className="space-y-4">
-              {filteredSchedules.map(schedule => (
-                <MovieCard
-                  key={`${schedule.theater.id}-${schedule.movie.id}`}
-                  schedule={schedule}
-                  selectedDate={selectedDate}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
+        {/* Movie List */}
+        {filteredSchedules.map(schedule => (
+          <MovieCard
+            key={`${schedule.theater.id}-${schedule.movie.id}`}
+            schedule={schedule}
+            selectedDate={selectedDate}
+          />
+        ))}
       </div>
     </div>
   );

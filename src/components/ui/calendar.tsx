@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths } from 'date-fns';
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, addMonths, subMonths, startOfWeek, endOfWeek } from 'date-fns';
 import { MovieSchedule } from '@/types/movie';
 
 interface CalendarProps {
@@ -16,7 +16,9 @@ export default function Calendar({ schedules, selectedDate, onDateSelect, onMont
 
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
-  const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
+  const calendarStart = startOfWeek(monthStart);
+  const calendarEnd = endOfWeek(monthEnd);
+  const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
 
   const handlePrevMonth = () => {
     const newMonth = subMonths(currentMonth, 1);
@@ -38,94 +40,69 @@ export default function Calendar({ schedules, selectedDate, onDateSelect, onMont
     );
   };
 
-  const getDayClasses = (date: Date) => {
-    const baseClasses = 'h-32 p-2 border border-gray-200 cursor-pointer transition-colors hover:bg-gray-50';
+  const getDayStyle = (date: Date) => {
     const daySchedules = getSchedulesForDate(date);
+    const isCurrentMonth = isSameMonth(date, currentMonth);
+    const isSelected = isSameDay(date, selectedDate);
     
-    let classes = baseClasses;
-    
-    if (!isSameMonth(date, currentMonth)) {
-      classes += ' text-gray-400 bg-gray-50';
-    }
-    
-    if (isSameDay(date, selectedDate)) {
-      classes += ' bg-blue-100 border-blue-300';
-    }
-    
-    if (daySchedules.length > 0) {
-      classes += ' ring-2 ring-green-200';
-    }
-    
-    return classes;
+    return {
+      height: '60px',
+      padding: '4px',
+      border: '1px solid #000',
+      cursor: 'pointer',
+      backgroundColor: isSelected ? '#000' : (isCurrentMonth ? '#fff' : '#f5f5f5'),
+      color: isSelected ? '#fff' : (isCurrentMonth ? '#000' : '#999'),
+      fontSize: '12px',
+      textDecoration: daySchedules.length > 0 && isCurrentMonth ? 'underline' : 'none',
+      fontWeight: daySchedules.length > 0 && isCurrentMonth ? 'bold' : 'normal'
+    };
   };
 
   return (
-    <div className="bg-white rounded-lg shadow">
+    <div style={{ border: '1px solid #000' }}>
       {/* Calendar Header */}
-      <div className="flex items-center justify-between p-4 border-b">
-        <button
-          onClick={handlePrevMonth}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px', borderBottom: '1px solid #000' }}>
+        <button onClick={handlePrevMonth}>
+          ← Previous
         </button>
         
-        <h2 className="text-xl font-semibold">
+        <h2 style={{ fontSize: '16px', fontWeight: 'normal' }}>
           {format(currentMonth, 'MMMM yyyy')}
         </h2>
         
-        <button
-          onClick={handleNextMonth}
-          className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
+        <button onClick={handleNextMonth}>
+          Next →
         </button>
       </div>
 
       {/* Weekday Headers */}
-      <div className="grid grid-cols-7 border-b">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
         {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-          <div key={day} className="p-3 text-center font-medium text-gray-700 bg-gray-50">
+          <div key={day} style={{ padding: '8px', textAlign: 'center', borderBottom: '1px solid #000', fontSize: '12px', fontWeight: 'bold' }}>
             {day}
           </div>
         ))}
       </div>
 
       {/* Calendar Grid */}
-      <div className="grid grid-cols-7">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
         {days.map(day => {
           const daySchedules = getSchedulesForDate(day);
+          const isCurrentMonth = isSameMonth(day, currentMonth);
           
           return (
             <div
               key={day.toString()}
-              className={getDayClasses(day)}
+              style={getDayStyle(day)}
               onClick={() => onDateSelect(day)}
             >
-              <div className="text-sm font-medium mb-1">
+              <div style={{ fontSize: '12px', marginBottom: '2px' }}>
                 {format(day, 'd')}
               </div>
               
-              {daySchedules.length > 0 && (
-                <div className="space-y-1">
-                  {daySchedules.slice(0, 3).map((schedule, index) => (
-                    <div
-                      key={`${schedule.movie.id}-${index}`}
-                      className="text-xs p-1 bg-blue-100 text-blue-800 rounded truncate"
-                    >
-                      {schedule.movie.title}
-                    </div>
-                  ))}
-                  
-                  {daySchedules.length > 3 && (
-                    <div className="text-xs text-gray-600">
-                      +{daySchedules.length - 3} more
-                    </div>
-                  )}
+              {daySchedules.length > 0 && isCurrentMonth && (
+                <div style={{ fontSize: '9px' }}>
+                  {daySchedules.length} movie{daySchedules.length > 1 ? 's' : ''}
                 </div>
               )}
             </div>
