@@ -29,12 +29,16 @@ export default function Calendar({ schedules, selectedDate, onDateSelect, onMont
   const handlePrevMonth = () => {
     const newMonth = subMonths(currentMonth, 1);
     setCurrentMonth(newMonth);
+    const firstDay = startOfMonth(newMonth);
+    onDateSelect(firstDay);
     onMonthChange(newMonth);
   };
 
   const handleNextMonth = () => {
     const newMonth = addMonths(currentMonth, 1);
     setCurrentMonth(newMonth);
+    const firstDay = startOfMonth(newMonth);
+    onDateSelect(firstDay);
     onMonthChange(newMonth);
   };
 
