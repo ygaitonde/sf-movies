@@ -65,7 +65,18 @@ export default function Home() {
     setFilters(newFilters);
   };
 
-  const filteredSchedules = schedules;
+  // Filter schedules for the selected date
+  const selectedDateSchedules = schedules.filter(schedule =>
+    schedule.showtimes.some(showtime =>
+      format(new Date(showtime.startTime), 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd')
+    )
+  );
+
+  // Get unique movie titles for the selected date
+  const uniqueMovieTitles = new Set(selectedDateSchedules.map(schedule => schedule.movie.title));
+  const uniqueMovieCount = uniqueMovieTitles.size;
+
+  const filteredSchedules = selectedDateSchedules;
 
   return (
     <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '20px', fontFamily: 'Times New Roman, serif' }}>
@@ -98,7 +109,21 @@ export default function Home() {
           {format(selectedDate, 'EEEE, MMMM d, yyyy')}
         </h2>
         
-        {loading && <p>Loading...</p>}
+        {loading && (
+          <div style={{ textAlign: 'center', padding: '40px 0' }}>
+            <div style={{ 
+              display: 'inline-block',
+              width: '20px',
+              height: '20px',
+              border: '2px solid #000',
+              borderTop: '2px solid transparent',
+              borderRadius: '50%',
+              animation: 'spin 1s linear infinite',
+              marginBottom: '10px'
+            }}></div>
+            <p style={{ margin: 0, fontSize: '14px' }}>Loading movies...</p>
+          </div>
+        )}
         
         {error && (
           <p style={{ border: '1px solid #000', padding: '10px', marginBottom: '10px' }}>
@@ -112,7 +137,7 @@ export default function Home() {
         
         {!loading && !error && filteredSchedules.length > 0 && (
           <p style={{ fontSize: '14px', marginBottom: '15px' }}>
-            {filteredSchedules.length} movie{filteredSchedules.length !== 1 ? 's' : ''} playing
+            {uniqueMovieCount} movie{uniqueMovieCount !== 1 ? 's' : ''} playing
           </p>
         )}
 

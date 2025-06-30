@@ -59,7 +59,7 @@ export default function Calendar({ schedules, selectedDate, onDateSelect, onMont
       backgroundColor: isSelected ? '#000' : (isCurrentMonth ? '#fff' : '#f5f5f5'),
       color: isSelected ? '#fff' : (isCurrentMonth ? '#000' : '#999'),
       fontSize: '12px',
-      textDecoration: daySchedules.length > 0 && isCurrentMonth ? 'underline' : 'none',
+      textDecoration: 'none',
       fontWeight: daySchedules.length > 0 && isCurrentMonth ? 'bold' : 'normal'
     };
   };
@@ -107,8 +107,23 @@ export default function Calendar({ schedules, selectedDate, onDateSelect, onMont
               </div>
               
               {daySchedules.length > 0 && isCurrentMonth && (
-                <div style={{ fontSize: '9px' }}>
-                  {daySchedules.length} movie{daySchedules.length > 1 ? 's' : ''}
+                <div style={{ fontSize: '9px', lineHeight: '1.2' }}>
+                  {daySchedules.slice(0, 2).map((schedule, index) => (
+                    <div key={index} style={{ 
+                      overflow: 'hidden', 
+                      textOverflow: 'ellipsis', 
+                      whiteSpace: 'nowrap',
+                      maxWidth: '100%'
+                    }}>
+                      {schedule.movie.title.length > 12 ? 
+                        schedule.movie.title.substring(0, 12) + '...' : 
+                        schedule.movie.title
+                      }
+                    </div>
+                  ))}
+                  {daySchedules.length > 2 && (
+                    <div style={{ fontStyle: 'italic' }}>...</div>
+                  )}
                 </div>
               )}
             </div>
