@@ -1,5 +1,6 @@
 import { MovieSchedule, Movie, Theater, Showtime, TheaterChain } from '@/types/movie';
 import { createAPIClient } from '@/lib/api-client';
+import { fromZonedTime } from 'date-fns-tz';
 
 interface VogueAPIResponse {
   id: string;
@@ -191,7 +192,10 @@ export class VogueParser {
 
     // Use the date from the base timestamp but with the parsed time
     const baseDate = new Date(baseTimestamp);
-    return new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate(), hours, minutes);
+    const pstDate = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate(), hours, minutes);
+    
+    // Convert PST date to UTC for storage
+    return fromZonedTime(pstDate, 'America/Los_Angeles');
   }
 
   private static createShowtime(movieId: string, startTime: Date, event: VogueAPIResponse): Showtime {

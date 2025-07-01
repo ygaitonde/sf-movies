@@ -1,5 +1,6 @@
 import { JSDOM } from 'jsdom';
 import { MovieSchedule, Movie, Theater, Showtime, TheaterChain } from '@/types/movie';
+import { fromZonedTime } from 'date-fns-tz';
 
 interface RoxieMovieData {
   title: string;
@@ -154,7 +155,8 @@ export class RoxieParser {
     
     if (!timeMatch) {
       // Default to 7:00 PM if we can't parse
-      return new Date(date.getFullYear(), date.getMonth(), date.getDate(), 19, 0);
+      const pstDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), 19, 0);
+      return fromZonedTime(pstDate, 'America/Los_Angeles');
     }
     
     let hours = parseInt(timeMatch[1]);
@@ -168,6 +170,8 @@ export class RoxieParser {
       hours = 0;
     }
     
-    return new Date(date.getFullYear(), date.getMonth(), date.getDate(), hours, minutes);
+    const pstDate = new Date(date.getFullYear(), date.getMonth(), date.getDate(), hours, minutes);
+    // Convert PST date to UTC for storage
+    return fromZonedTime(pstDate, 'America/Los_Angeles');
   }
 }

@@ -2,6 +2,7 @@
 
 import { MovieSchedule } from '@/types/movie';
 import { format } from 'date-fns';
+import { formatInTimeZone } from 'date-fns-tz';
 
 interface MovieCardProps {
   schedule: MovieSchedule;
@@ -12,7 +13,7 @@ export default function MovieCard({ schedule, selectedDate }: MovieCardProps) {
   const { movie, theater, showtimes } = schedule;
   
   const dayShowtimes = showtimes.filter(showtime => 
-    format(new Date(showtime.startTime), 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd')
+    formatInTimeZone(new Date(showtime.startTime), 'America/Los_Angeles', 'yyyy-MM-dd') === format(selectedDate, 'yyyy-MM-dd')
   );
 
   if (dayShowtimes.length === 0) return null;
@@ -38,7 +39,7 @@ export default function MovieCard({ schedule, selectedDate }: MovieCardProps) {
               rel="noopener noreferrer"
               style={{ textDecoration: 'underline' }}
             >
-              {format(new Date(showtime.startTime), 'h:mm a')}
+              {formatInTimeZone(new Date(showtime.startTime), 'America/Los_Angeles', 'h:mm a')}
             </a>
             {index < dayShowtimes.length - 1 && ', '}
           </span>
