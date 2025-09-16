@@ -56,20 +56,30 @@ export default function Calendar({ schedules, selectedDate, onDateSelect, onMont
     const isSelected = isSameDay(date, selectedDate);
     
     return {
-      minHeight: '50px',
-      height: 'auto',
-      padding: '2px',
+      minHeight: '90px',
+      height: '100%',
+      padding: '6px',
       border: '1px solid #000',
       cursor: 'pointer',
       backgroundColor: isSelected ? '#000' : (isCurrentMonth ? '#fff' : '#f5f5f5'),
       color: isSelected ? '#fff' : (isCurrentMonth ? '#000' : '#999'),
-      fontSize: '10px',
+      fontSize: '12px',
       textDecoration: 'none',
       fontWeight: daySchedules.length > 0 && isCurrentMonth ? 'bold' : 'normal',
       display: 'flex',
       flexDirection: 'column' as const,
-      justifyContent: 'flex-start'
+      justifyContent: 'flex-start',
+      gap: '4px'
     };
+  };
+
+  const getEarliestShowtimeForDate = (schedule: MovieSchedule, date: Date) => {
+    const dayShowtimes = schedule.showtimes
+      .map((showtime) => new Date(showtime.startTime))
+      .filter((startTime) => isSameDay(startTime, date))
+      .sort((first, second) => first.getTime() - second.getTime());
+
+    return dayShowtimes[0];
   };
 
   return (
@@ -110,27 +120,34 @@ export default function Calendar({ schedules, selectedDate, onDateSelect, onMont
               style={getDayStyle(day)}
               onClick={() => onDateSelect(day)}
             >
-              <div style={{ fontSize: '10px', marginBottom: '1px', flexShrink: 0 }}>
+              <div style={{ fontSize: '12px', fontWeight: 'bold', flexShrink: 0 }}>
                 {format(day, 'd')}
               </div>
               
               {daySchedules.length > 0 && isCurrentMonth && (
-                <div style={{ fontSize: '8px', lineHeight: '1.1', flex: 1, overflow: 'hidden' }}>
-                  {daySchedules.slice(0, 2).map((schedule, index) => (
-                    <div key={index} style={{ 
-                      overflow: 'hidden', 
-                      textOverflow: 'ellipsis', 
-                      whiteSpace: 'nowrap',
-                      maxWidth: '100%'
-                    }}>
-                      {schedule.movie.title.length > 8 ? 
-                        schedule.movie.title.substring(0, 8) + '...' : 
-                        schedule.movie.title
-                      }
-                    </div>
-                  ))}
-                  {daySchedules.length > 2 && (
-                    <div style={{ fontStyle: 'italic' }}>...</div>
+                <div style={{ fontSize: '11px', lineHeight: '1.2', flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                  {daySchedules.slice(0, 3).map((schedule, index) => {
+                    const startTime = getEarliestShowtimeForDate(schedule, day);
+                    const timeLabel = startTime ? format(startTime, 'h:mm a') : '';
+
+                    return (
+                      <div
+                        key={index}
+                        style={{
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          display: 'block'
+                        }}
+                      >
+                        {timeLabel && (
+                          <span style={{ fontWeight: 'normal', marginRight: '4px' }}>{timeLabel}:</span>
+                        )}
+                        <span style={{ fontWeight: 'normal', whiteSpace: 'normal' }}>{schedule.movie.title}</span>
+                      </div>
+                    );
+                  })}
+                  {daySchedules.length > 3 && (
+                    <div style={{ fontStyle: 'italic' }}>+{daySchedules.length - 3} more</div>
                   )}
                 </div>
               )}
