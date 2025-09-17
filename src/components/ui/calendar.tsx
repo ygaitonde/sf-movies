@@ -126,26 +126,34 @@ export default function Calendar({ schedules, selectedDate, onDateSelect, onMont
               
               {daySchedules.length > 0 && isCurrentMonth && (
                 <div style={{ fontSize: '11px', lineHeight: '1.2', flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', gap: '2px' }}>
-                  {daySchedules.slice(0, 3).map((schedule, index) => {
-                    const startTime = getEarliestShowtimeForDate(schedule, day);
-                    const timeLabel = startTime ? format(startTime, 'h:mm a') : '';
+                  {daySchedules
+                    .sort((a, b) => {
+                      const timeA = getEarliestShowtimeForDate(a, day);
+                      const timeB = getEarliestShowtimeForDate(b, day);
+                      if (!timeA || !timeB) return 0;
+                      return timeA.getTime() - timeB.getTime();
+                    })
+                    .slice(0, 3)
+                    .map((schedule, index) => {
+                      const startTime = getEarliestShowtimeForDate(schedule, day);
+                      const timeLabel = startTime ? format(startTime, 'h:mm a') : '';
 
-                    return (
-                      <div
-                        key={index}
-                        style={{
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          display: 'block'
-                        }}
-                      >
-                        {timeLabel && (
-                          <span style={{ fontWeight: 'normal', marginRight: '4px' }}>{timeLabel}:</span>
-                        )}
-                        <span style={{ fontWeight: 'normal', whiteSpace: 'normal' }}>{schedule.movie.title}</span>
-                      </div>
-                    );
-                  })}
+                      return (
+                        <div
+                          key={index}
+                          style={{
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            display: 'block'
+                          }}
+                        >
+                          {timeLabel && (
+                            <span style={{ fontWeight: 'normal', marginRight: '4px' }}>{timeLabel}:</span>
+                          )}
+                          <span style={{ fontWeight: 'normal', whiteSpace: 'normal' }}>{schedule.movie.title}</span>
+                        </div>
+                      );
+                    })}
                   {daySchedules.length > 3 && (
                     <div style={{ fontStyle: 'italic' }}>+{daySchedules.length - 3} more</div>
                   )}
