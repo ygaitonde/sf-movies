@@ -5,7 +5,7 @@ import { MovieSchedule, FilterOptions, APIResponse } from "@/types/movie";
 import Calendar from "@/components/ui/calendar";
 import MovieCard from "@/components/ui/movie-card";
 import FilterPanel from "@/components/ui/filter-panel";
-import { format } from "date-fns";
+import { format, addDays, subDays } from "date-fns";
 
 export default function Home() {
   const [schedules, setSchedules] = useState<MovieSchedule[]>([]);
@@ -54,6 +54,18 @@ export default function Home() {
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
+  };
+
+  const handlePrevDay = () => {
+    const prevDay = subDays(selectedDate, 1);
+    setSelectedDate(prevDay);
+    fetchSchedules(prevDay, filters);
+  };
+
+  const handleNextDay = () => {
+    const nextDay = addDays(selectedDate, 1);
+    setSelectedDate(nextDay);
+    fetchSchedules(nextDay, filters);
   };
 
   const handleMonthChange = () => {
@@ -151,15 +163,52 @@ export default function Home() {
 
       {/* Selected Date */}
       <div style={{ borderTop: "1px solid #000", paddingTop: "20px" }}>
-        <h2
+        <div
           style={{
-            fontSize: "18px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
             marginBottom: "10px",
-            fontWeight: "normal",
           }}
         >
-          {format(selectedDate, "EEEE, MMMM d, yyyy")}
-        </h2>
+          <button
+            onClick={handlePrevDay}
+            style={{
+              fontSize: "16px",
+              cursor: "pointer",
+              background: "none",
+              border: "none",
+              padding: "5px 10px",
+            }}
+            aria-label="Previous day"
+          >
+            ←
+          </button>
+          <h2
+            style={{
+              fontSize: "18px",
+              fontWeight: "normal",
+              margin: "0",
+              textAlign: "center",
+              flex: 1,
+            }}
+          >
+            {format(selectedDate, "EEEE, MMMM d, yyyy")}
+          </h2>
+          <button
+            onClick={handleNextDay}
+            style={{
+              fontSize: "16px",
+              cursor: "pointer",
+              background: "none",
+              border: "none",
+              padding: "5px 10px",
+            }}
+            aria-label="Next day"
+          >
+            →
+          </button>
+        </div>
 
         {loading && (
           <div style={{ textAlign: "center", padding: "40px 0" }}>
